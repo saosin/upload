@@ -1,0 +1,174 @@
+
+building cyanogen mod from sourcecode :
+
+1. set up linux ubuntu 11.04 (recommened) on VMware or somewhere else ..
+I´m using Kubuntu 11.10 and its working fine ...
+
+2. download my Sin_CM7_rom_script.sh script and execute it 
+
+sh Sin_CM7_rom_script.sh
+
+This script download all needed files to compile a full cyanogen mod 7 rom with blendmiui kernel..
+
+This process takes from 1 to 6 hours TIME !!!! It will download a few GB Sourcecode files ...
+
+
+The Rom Folder structure on your ubuntu will look like :
+
+this are only the folders you must know for now
+
+
+
+/home/username/android/system                       => cm7 mainsystem
+
+/home/username/android/system/kernel                => here is your BlendMIUI Kernel SourceCode from JasonStein
+
+/home/username/android/system/device/anzu           => your xperia arc device build files
+/home/username/android/system/device/mogami-common  => your mogami platform with WiFi drivers !!!
+/home/username/android/system/device/msm7x30-common => your msm7x30 build files with recovery data
+/home/username/android/system/vendor/semc/anzu      => your SEMC Anzu Vendor proprietary files (sony factory files)
+
+
+when the repo has successfully synced the files to your harddisk , you should make a restart of ubuntu ..
+
+
+
+
+3. Now we can start compile the kernel and wifi modules !
+
+
+#download ARM Cross Compiler from internet and put into {username}/opt dic.
+
+
+wget http://www.codesourcery.com/sgpp/lite/arm/portal/package7813/public/arm-none-eabi/arm-2010.09-51-arm-none-eabi-i686-pc-linux-gnu.tar.bz2
+
+bunzip2 arm-2010.09-51-arm-none-eabi-i686-pc-linux-gnu.tar.bz2
+
+tar -xf arm-2010.09-51-arm-none-eabi-i686-pc-linux-gnu.tar
+
+#allow to paste all commands at once.
+
+sudo mv arm-2010.09 /opt/ && \
+
+sudo ln -s /opt/arm-2010.09/bin/* /usr/bin/;                                    #link new binaries in path
+
+
+#export your prebuild toolchains to path. change the username first !!!
+
+export PATH=/<toolchain_folder>/bin:$PATH
+export CROSS_COMPILE=arm-none-eabi-
+
+#mine looks like that
+
+export PATH=/home/saosin/android/system/prebuilt/linux-x86/toolchain/arm-eabi-4.4.0/bin:$PATH
+export CROSS_COMPILE=arm-eabi-
+
+
+#then go to android/system/kernel dic. and type following : (with your path !!! ) i take arm-eabi-linaro-4.6.2 for cm9 !!
+
+ARCH=arm CROSS_COMPILE=/home/saosin/opt/arm-eabi-linaro-4.6.2/bin/arm-eabi- make miui_anzu_defconfig
+
+ARCH=arm CROSS_COMPILE=/home/saosin/android/system/prebuilt/linux-x86/toolchain/arm-eabi-4.4.0/bin/arm-eabi- make 
+
+
+# You will get zImage under kernel/arch/arm/boot dic.
+
+
+
+###now build wifi modules  not needed for now  we all use BlendMIUI kernel 
+
+
+
+
+#BUILD KERNEL boot.img / BUILD CM7 rom with 3G
+
+
+#First,download rommanager
+
+Code:
+
+cd ~/android/system/vendor/cyanogen/
+
+./get-rommanager
+
+./extract-google-files -v MDPI
+
+
+Then goto android/system/device/semc/anzu dic
+
+
+run setup-makefiles.sh(you'd better set permission first:chmod 777 setup-makefiles.sh)
+
+
+
+#Replace kernel file in
+
+android/system/device/semc/anzu dic by your zImage(rename it to kernel)
+
+
+#Begin to compile whole rom.
+
+Code:
+
+cd ~/android/system/
+
+. build/envsetup.sh
+
+lunch
+
+#then choose number of anzu to begin.
+
+type number and hit enter 
+
+#Now compile:
+
+make
+
+
+
+#Or for a flashable zip:
+
+make otapackage
+
+
+
+
+#this compile process takes some time to finish !!!
+
+
+#when everything worked fine , then you can find your flashable zip file and system folder from your own compiled cm7 rom under :
+
+/home/username/android/system/out/target/product/anzu   
+
+in the out folder must be :
+
+boot.img  => you should not use this for now !! take blendmiui kernel boot.img
+flashable.zip => cm7 rom should be normal working with blendmiui kernel
+system folder => here are rom files you can use to update the BMSPS !!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
