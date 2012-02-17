@@ -1,8 +1,7 @@
-
 building cyanogen mod from sourcecode :
 
 1. set up linux ubuntu 11.04 (recommened) on VMware or somewhere else ..
-I´m using Kubuntu 11.10 and its working fine ...
+Iï¿½m using Kubuntu 11.10 and its working fine ...
 
 2. download my Sin_CM7_rom_script.sh script and execute it 
 
@@ -38,6 +37,8 @@ when the repo has successfully synced the files to your harddisk , you should ma
 
 
 #download ARM Cross Compiler from internet and put into {username}/opt dic.
+
+## You can also use arm-linaro cross compiler from here : https://github.com/DooMLoRD/android_prebuilt_toolchains
 
 
 wget http://www.codesourcery.com/sgpp/lite/arm/portal/package7813/public/arm-none-eabi/arm-2010.09-51-arm-none-eabi-i686-pc-linux-gnu.tar.bz2
