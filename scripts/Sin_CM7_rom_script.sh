@@ -2,7 +2,7 @@
 
 
 echo "
-You are using sin_Rom_script to build a CyanogenMod7 Firmware for SEMC Anzu LT15i device, this process takes about 1 - 6 hours !!,.. Can we start?? (y/n)"
+You are using sin_Rom_script (based on nicandris douchebuild script) to build a CyanogenMod7 Firmware for SEMC Anzu LT15i device, this process takes about 1 - 6 hours !!,.. Can we start?? (y/n)"
 read _clear
 if [ "$_clear" != "y" ]; then echo  "\You sir/madam are an #epicfail (jk). Please read the above and try again."; exit 0; fi
 
