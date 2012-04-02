@@ -155,7 +155,45 @@ system folder => here are rom files you can use to update the BMSPS !!
 
 
 
+How to build Android on RHEL6 or Fedora
+Google's instructions of how to build Android only detail how to setup your build environment on Ubuntu.  This post describes how to do the equivalent on RHEL6, CentOS 6, Scientific Linux 6 or Fedora 16+.
 
+
+Notes
+
+    These build requirements are enough to build AOSP 4.0.3 after lunch full-eng.  Cyanogenmod 9 has the same build requirements except it wants a PNG optimizer.  According to this comparison chart, the two best are pngout or advancecomp.  pngout is not open source, but it seems to work well.  advancecomp is not supported by the CM build system.
+    The optional environment variable USE_CCACHE=1 does not use the system ccache, but rather a prebuilt ccache that comes in the Android tree.  See Google's documentation about ccache.
+    Fedora 16 Bug #787712 causes the repo script to lockup very often.  I built python packages that fixes this issue for Fedora 16.
+
+Common Build Requirements
+# You need this to build AOSP 4.0.3 or CM9
+yum install make curl gnupg git bison unzip zip flex gperf
+yum install gcc-c++ libstdc++-devel
+yum install glibc-devel.i686 zlib-devel.i686 ncurses-devel.i686
+yum install libX11-devel.i686 mesa-libGL-devel.i686
+
+# You need this to build CM7
+yum install readline-devel.i686
+
+# Not required, but helpful
+yum install schedtool
+
+Java for RHEL6
+# Java 6 from http://www.oracle.com/technetwork/java/javase/downloads/jdk-6u30-download-1377139.html
+wget http://download.oracle.com/otn-pub/java/jdk/6u30-b12/jdk-6u30-linux-x64-rpm.bin
+sh jdk-6u30-linux-x64-rpm.bin
+cd /usr/local/bin
+for cmd in jar java javac javadoc javah
+do ln -s /usr/java/jdk1.6.0_30/bin/$cmd
+done
+
+Java for Fedora 16+
+yum install java-1.6.0-openjdk-devel
+
+Kernel Building
+# If you plan on building a kernel, you need this.
+yum install glibc-devel.x86_64 glibc-devel.i686
+yum install ncurses-devel.x86_64
 
 
 
