@@ -196,8 +196,107 @@ yum install glibc-devel.x86_64 glibc-devel.i686
 yum install ncurses-devel.x86_64
 
 
+##########################################################################################################################
+##########################################################################################################################
 
 
+How to build cm9 kernel :
+
+For those of you with lower powered computers like me (My computer right now is 2gb RAM, Core 2 Duo) its a hassle every time you build ICS. For me it takes around 10 hours, and half the time the build crashes.
+So since I wanted to just get my feet wet with the development going on here as far as the actual ROM, I decided I wanted to go the kernel route.
+
+The actual compilation guides around the internet are just for compiling the kernel and then adding it into the ROM's build directory so that it gets build along with the ROM. The thing is though that if you don't compile the build kernel with the ROM, then it lacks the ramdisk and doesn't boot.
+
+So thanks to the help of jcsullins, we now have a guide for building CM9 without the ROM building It is below. Many parts of this guide were taken from here: https://www.evernote.com/shard/s102/...a90a4d1c51210f (by danabw) and from here: http://code.google.com/p/moboot/issues/detail?id=20
+
+This guide assumes you havent build android before on your system. The build requires some extra programs which are explained in the steps below as well.
+
+Where ever there is multiple lines of code, run the code lines one at a time. Also, I am not responsible for anything that happens as a result of this guide, though it works perfectly for me on Ubuntu 10.04 and the CM9 Nightlies.
+
+Without further ado, here it is:
+
+Prerequisites:
+-Touchpad (d'oh)
+-PC running Ubuntu 10.04 or higher (I recommend 10.04 for the best stability as far as android builds go including this one)
+-Run these lines of code to install most of the prerequisites you need for building android (approx 103 mb)
+
+    sudo add-apt-repository ppa:ferramroberto/java
+    sudo apt-get update
+    sudo apt-get install sun-java6-bin
+    sudo apt-get install sun-java6-jdk
+    sudo apt-get install git-core gnupg flex bison gperf libsdl1.2-dev libesd0-dev libwxgtk2.6-dev squashfs-tools build-essential zip curl libncurses5-dev zlib1g-dev sun-java6-jdk pngcrush schedtool
+
+
+1. Create the kernel build directory
+
+    mkdir -p ~/android/kernel/
+
+2. Get the kernel source.
+
+    cd ~/android/kernel/
+    git clone git://github.com/CyanogenMod/hp-kernel-tenderloin.git -b ics
+
+3. Download & install uboot-mkimage and set the PATH to it:
+
+    sudo apt-get install uboot-mkimage
+    PATH=${PATH}:~/usr/bin
+
+4. Download & install CodeSourcery for the ARM Toolchain
+Click on the link here: https://sourcery.mentor.com/sgpp/lit...al/release1802
+Click "IA32 GNU/Linux Installer"
+Let the package download
+After done, go to terminal and navigate to your download directory (mine is /home/rohan/Download)
+Type these commands:
+
+    chmod +x arm-2011.03-42-arm-none-eabi.bin
+    ./arm-2011.03-42-arm-none-eabi.bin
+
+Follow the directions it gives you. If it comes up with an error about reconfiguring dpkg, do what the message in the terminal says about turning off a settings. You can reenable this later if you want by doing the same command and choosing yes instead of no.
+
+5. Configure the configuration file
+Close out of that terminal and open a new one.
+Navigate to the kernel's build folder (the one whose path ends in the folder hp-kernel-tenderloin)
+Then type:
+
+    make ARCH=arm tenderloin_android_defconfig
+
+6. Build the kernel
+Type the following into terminal:
+
+    make ARCH=arm -j8 CROSS_COMPILE=~/CodeSourcery/Sourcery_G++_Lite/bin/arm-none-eabi- uImage
+
+Where it says "-j8" above, replace with the number of CPU/cores on your system. On a dual core system that should be -j8, but -j3 worked fine on my dual core system as well.
+This took my system around 7 minutes.
+
+7. Ready the uimage-extractor tool
+Go up one directory in your terminal and then do the following commands:
+
+    git clone https://code.google.com/p/moboot
+    cd moboot/tools
+    gcc -lz uimage-extract.c -o uimage-extract
+
+Now grab the uImage.CyanogenMod you have in your Touchpad's /boot folder (via a file manager with root access or adb) and put the uImage in the moboot/tools directory (where the terminal currently is in)
+
+8. Decompile the existing uImage
+Type the following:
+
+    ./uimage-extract uImage.CyanogenMod
+
+9. Grab the built uImage and put it in the extracted folder
+Type the following:
+
+    cp <location to the hp-kernel-tenderloin folder here>/arch/arm/boot/uImage <location to the moboot/tools folder here>/uImage
+
+10. Build the new kernel using the old ramdisk and your new built uImage
+Type the following:
+
+    mkimage -A arm -O linux -T ramdisk -C none -a 0x60000000 -e 0x60000000 -n "Image" -d ramdisk.img uRamdisk
+    mkimage -A arm -O linux -T multi -a 0x40208000 -e 0x40208000 -C none -n "multi image" -d uImage:uRamdisk uImage.CyanogenMod.new
+
+Thats it!
+Your new kernel should now be in the moboot/tools directory under the name "uImage.CyanogenMod.new"
+
+Transfer it to the /boot folder of your device and watch your hard work pay off 
 
 
 
