@@ -302,8 +302,90 @@ Transfer it to the /boot folder of your device and watch your hard work pay off
 
 
 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Build cm9 Kernel for anzu from sourcecode :
 
 
+
+1, download needed libs and arm toolchain...
+
+install sun java6:
+
+sudo add-apt-repository ppa:ferramroberto/java
+ sudo apt-get update
+ sudo apt-get install sun-java6-bin
+ sudo apt-get install sun-java6-jdk
+ sudo apt-get install git-core gnupg flex bison gperf libsdl1.2-dev libesd0-dev libwxgtk2.6-dev squashfs-tools build-essential zip curl libncurses5-dev zlib1g-dev sun-java6-jdk pngcrush schedtool
+
+
+
+
+git clone git://github.com/DooMLoRD/android_prebuilt_toolchains.git toolchains
+
+export PATH=/home/saosin/android/system/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin:$PATH       # set path to toolchain 
+
+export CROSS_COMPILE=arm-eabi-                                                                      # set cross compile path
+
+
+2, download git sourcecode : (normally you should download full cm9 sourcecode, but this takes ~6 hours !)
+
+mkdir -p ~/android/kernel/
+
+cd ~/android/kernel/
+
+git clone git://github.com/freexperia/semc-kernel-msm7x30-ics.git -b ics-beta                 # kernel sourcecode (350MB
+
+mkdir -p ~/android/system/device/semc/mogami-common/
+
+cd ~/android/system/device/semc/mogami-common/
+
+git clone git://github.com/CyanogenMod/android_device_semc_mogami-common.git -b ics           # for wifi modules
+
+
+3, build kernel (with your path to toolchain !!)
+
+ARCH=arm CROSS_COMPILE=/home/saosin/android/system/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi- make fxp_anzu_defconfig
+
+ARCH=arm CROSS_COMPILE=/home/saosin/android/system/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi- make 
+
+
+after success kernel zImage should be under /kernel/arch/arm/boot/zImage
+
+4, now compile Wifi modules for your zImage
+
+go to your folder mogami-common/wl12xx/ and edit this file set_wl12xx_semc (change your folder path ...)
+
+then execute it ....
+
+when everything is finished you should have following files:
+
+mogami-common/wl12xx/modules:
+
+cfg80211.ko
+compat.ko
+compat_firmware_class.ko
+mac80211.ko
+wl12xx.ko
+wl12xx_sdio.ko
+
+/kernel/arch/arm/boot:
+
+zImage
+
+
+5, now there are 2 ways ...
+
+1 make a new boot.img with ramdisk  # but for that you need to download full cm9 sourcecode ~6 GB data ,,,
+
+2 or download fxp kernel (boot.img) from cm9 rom
+
+decompile the boot.img and replace the modules and zImage...
+
+finally recompile....
+
+
+this should be working .
 
 
 
